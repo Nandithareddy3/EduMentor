@@ -8,7 +8,6 @@
 </head>
 <body class="relative bg-cover bg-center bg-no-repeat min-h-screen" style="background-image: url('photo.jpg');">
 
-
   <!-- Overlay -->
   <div class="absolute inset-0 bg-black opacity-50 z-0"></div>
 
@@ -17,18 +16,18 @@
 
     <!-- Navbar -->
     <nav class="bg-transparent shadow-none sticky top-0 z-20">
-  <div class="container mx-auto flex justify-between items-center p-4">
-    <div class="text-2xl font-bold text-white">EduMentor</div>
-    <div>
-      <a href="#" class="text-white hover:text-blue-300 px-4">Login</a>
-      <a href="#" class="text-white hover:text-blue-300 px-4">Register</a>
-    </div>
-  </div>
-</nav>
-
+      <div class="container mx-auto flex justify-between items-center p-4">
+        <div class="text-2xl font-bold text-white">EduMentor</div>
+        <div>
+          <button onclick="showSection('home')" class="text-white hover:text-blue-300 px-4">Home</button>
+          <button onclick="showSection('goals')" class="text-white hover:text-blue-300 px-4">Goals</button>
+          <button onclick="showSection('progress')" class="text-white hover:text-blue-300 px-4">Progress</button>
+        </div>
+      </div>
+    </nav>
 
     <!-- Hero Section -->
-    <section class="flex flex-col items-center justify-center text-center h-screen px-4">
+    <section id="home" class="page-section flex flex-col items-center justify-center text-center h-screen px-4">
       <h1 class="text-white text-4xl md:text-6xl font-bold drop-shadow-lg">Track Your Learning. Achieve More.</h1>
       <p class="text-white text-lg md:text-xl mt-4 drop-shadow">Create goals, log your progress, and visualize your growth.</p>
       <a href="#" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg mt-6 shadow-lg">Get Started</a>
@@ -37,25 +36,38 @@
     <!-- Features Section -->
     <section class="container mx-auto py-16 px-4 bg-white bg-opacity-90 rounded-t-3xl">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
         <div class="bg-white shadow-lg rounded-xl p-6 text-center hover:scale-105 transition-transform">
           <div class="text-4xl">🎯</div>
           <h2 class="text-xl font-bold mt-4">Set Learning Goals</h2>
           <p class="text-gray-600 mt-2">Create goals, log your progress, topics.</p>
         </div>
-
         <div class="bg-white shadow-lg rounded-xl p-6 text-center hover:scale-105 transition-transform">
           <div class="text-4xl">📝</div>
           <h2 class="text-xl font-bold mt-4">Track Daily Progress</h2>
           <p class="text-gray-600 mt-2">Monitor your daily learning efforts.</p>
         </div>
-
         <div class="bg-white shadow-lg rounded-xl p-6 text-center hover:scale-105 transition-transform">
           <div class="text-4xl">📊</div>
           <h2 class="text-xl font-bold mt-4">Visualize Analytics</h2>
           <p class="text-gray-600 mt-2">Get insights into your learning journey.</p>
         </div>
       </div>
+    </section>
+
+    <!-- Goals Section -->
+    <section id="goals" class="page-section hidden container mx-auto py-12 px-4">
+      <h2 class="text-2xl font-bold text-white mb-4">Your Learning Goals</h2>
+      <div class="flex gap-4 mb-4">
+        <input id="goalInput" type="text" placeholder="Enter your goal" class="w-full p-2 rounded-lg border border-gray-300" />
+        <button onclick="addGoal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">Add Goal</button>
+      </div>
+      <ul id="goalList" class="space-y-2"></ul>
+    </section>
+
+    <!-- Progress Section -->
+    <section id="progress" class="page-section hidden container mx-auto py-12 px-4">
+      <h2 class="text-2xl font-bold text-white mb-4">Daily Progress (Coming Soon)</h2>
+      <p class="text-white">This section will let you track daily logs soon.</p>
     </section>
 
     <!-- Footer -->
@@ -68,5 +80,58 @@
     </footer>
 
   </div>
+
+  <!-- JavaScript -->
+  <script>
+    // Section toggle
+    function showSection(id) {
+      const sections = document.querySelectorAll(".page-section");
+      sections.forEach(sec => sec.style.display = "none");
+      document.getElementById(id).style.display = "block";
+    }
+
+    // Goals: Add, Render, Delete
+    function addGoal() {
+      const input = document.getElementById("goalInput");
+      const goal = input.value.trim();
+      if (goal === "") return;
+
+      const goals = JSON.parse(localStorage.getItem("goals")) || [];
+      goals.push(goal);
+      localStorage.setItem("goals", JSON.stringify(goals));
+      
+      input.value = "";
+      renderGoals();
+    }
+
+    function renderGoals() {
+      const list = document.getElementById("goalList");
+      list.innerHTML = "";
+      const goals = JSON.parse(localStorage.getItem("goals")) || [];
+      
+      goals.forEach((goal, index) => {
+        const li = document.createElement("li");
+        li.className = "bg-white rounded-lg p-4 flex justify-between items-center shadow";
+        li.textContent = goal;
+
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "❌";
+        delBtn.className = "text-red-600 ml-4 hover:text-red-800";
+        delBtn.onclick = () => deleteGoal(index);
+
+        li.appendChild(delBtn);
+        list.appendChild(li);
+      });
+    }
+
+    function deleteGoal(index) {
+      const goals = JSON.parse(localStorage.getItem("goals")) || [];
+      goals.splice(index, 1);
+      localStorage.setItem("goals", JSON.stringify(goals));
+      renderGoals();
+    }
+
+    window.onload = renderGoals;
+  </script>
 </body>
 </html>
